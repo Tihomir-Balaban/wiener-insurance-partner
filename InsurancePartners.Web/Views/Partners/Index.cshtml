@@ -79,11 +79,13 @@
                             ? "table-warning font-weight-bold"
                             : string.Empty;
 
+                        var tableRowClass = $"js-partner-row {rowClass}".Trim();
+
                         var fullName = partner.IsMarked
                             ? $"* {partner.FullName}"
                             : partner.FullName;
 
-                        <tr class="@rowClass" data-partner-id="@partner.Id">
+                        <tr class="@tableRowClass" data-partner-id="@partner.Id">
                             <td>
                                 <span class="partner-full-name">@fullName</span>
                             </td>
@@ -139,3 +141,22 @@
         }
     </div>
 </div>
+<div
+    class="modal fade"
+    id="partnerDetailsModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="partnerDetailsModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" id="partnerDetailsModalContent">
+            <div class="modal-body text-center p-5">
+                Loading...
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/partners.js" asp-append-version="true"></script>
+}

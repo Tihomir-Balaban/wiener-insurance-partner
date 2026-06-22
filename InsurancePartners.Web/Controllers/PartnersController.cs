@@ -13,4 +13,17 @@ public sealed class PartnersController(IPartnerService partnerService) : Control
 
         return View(partners);
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Details(int id)
+    {
+        var partner = await partnerService.GetDetailsAsync(id);
+
+        if (partner is null)
+        {
+            return NotFound();
+        }
+
+        return PartialView("_DetailsModalContent", partner);
+    }
 }

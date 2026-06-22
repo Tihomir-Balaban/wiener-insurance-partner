@@ -46,3 +46,15 @@ body {
 .table-warning.font-weight-bold td {
   font-weight: 600;
 }
+
+.js-partner-row {
+  cursor: pointer;
+}
+
+.modal-body dl dt {
+  font-weight: 600;
+}
+
+.modal-body dl dd {
+  margin-bottom: .5rem;
+}
