@@ -8,7 +8,11 @@
 
     const $addPolicyModal = $('#addPolicyModal');
     const $addPolicyForm = $('#addPolicyForm');
+    const $addPolicyModalLabel = $('#addPolicyModalLabel');
+    const $addPolicySubmitButton = $('#addPolicySubmitButton');
+    const $addPolicyId = $('#addPolicyId');
     const $addPolicyPartnerId = $('#addPolicyPartnerId');
+    const $addPolicyRowVersion = $('#addPolicyRowVersion');
     const $addPolicyPartnerName = $('#addPolicyPartnerName');
     const $addPolicyNumber = $('#addPolicyNumber');
     const $addPolicyAmount = $('#addPolicyAmount');
@@ -58,12 +62,54 @@
             });
     }
 
-    function clearAddPolicyForm() {
+    function clearPolicyForm() {
         $addPolicyErrors.empty();
+        $addPolicyId.val('');
         $addPolicyPartnerId.val('');
+        $addPolicyRowVersion.val('');
         $addPolicyPartnerName.text('');
         $addPolicyNumber.val('');
         $addPolicyAmount.val('');
+    }
+
+    function prepareAddPolicyModal(partnerId, partnerName) {
+        clearPolicyForm();
+
+        $addPolicyForm.attr('action', '/Policies/Create');
+        $addPolicyModalLabel.text('Add Policy');
+        $addPolicySubmitButton.text('Save Policy');
+
+        $addPolicyPartnerId.val(partnerId);
+        $addPolicyPartnerName.text(partnerName || 'Selected partner');
+    }
+
+    function prepareEditPolicyModal(policy) {
+        clearPolicyForm();
+
+        $addPolicyForm.attr('action', `/Policies/Edit/${policy.id}`);
+        $addPolicyModalLabel.text('Edit Policy');
+        $addPolicySubmitButton.text('Save Changes');
+
+        $addPolicyId.val(policy.id);
+        $addPolicyPartnerId.val(policy.partnerId);
+        $addPolicyRowVersion.val(policy.rowVersion);
+        $addPolicyPartnerName.text(`Policy ${policy.policyNumber}`);
+        $addPolicyNumber.val(policy.policyNumber);
+        $addPolicyAmount.val(policy.policyAmount);
+    }
+
+    function showPolicyModal() {
+        if ($partnerDetailsModal.hasClass('show')) {
+            $partnerDetailsModal.one('hidden.bs.modal', function () {
+                $addPolicyModal.modal('show');
+            });
+
+            $partnerDetailsModal.modal('hide');
+
+            return;
+        }
+
+        $addPolicyModal.modal('show');
     }
 
     function showAddPolicyErrors(errors) {
@@ -170,12 +216,28 @@
             return;
         }
 
-        clearAddPolicyForm();
+        prepareAddPolicyModal(partnerId, partnerName);
+        showPolicyModal();
+    });
 
-        $addPolicyPartnerId.val(partnerId);
-        $addPolicyPartnerName.text(partnerName || 'Selected partner');
+    $(document).on('click', '.js-edit-policy', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
 
-        $addPolicyModal.modal('show');
+        const policyId = $(this).data('policy-id');
+
+        if (!policyId) {
+            return;
+        }
+
+        $.get(`/Policies/Edit/${policyId}`)
+            .done(function (policy) {
+                prepareEditPolicyModal(policy);
+                showPolicyModal();
+            })
+            .fail(function () {
+                alert('Policy could not be loaded.');
+            });
     });
 
     $addPolicyForm.on('submit', function (event) {
@@ -201,7 +263,7 @@
                 );
 
                 $addPolicyModal.modal('hide');
-                clearAddPolicyForm();
+                clearPolicyForm();
             })
             .fail(function (xhr) {
                 const response = xhr.responseJSON;

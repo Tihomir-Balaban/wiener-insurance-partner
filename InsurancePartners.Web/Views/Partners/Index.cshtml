@@ -215,7 +215,9 @@
             <form id="addPolicyForm" method="post" action="/Policies/Create">
                 @Html.AntiForgeryToken()
 
+                <input type="hidden" id="addPolicyId" name="Id"/>
                 <input type="hidden" id="addPolicyPartnerId" name="PartnerId"/>
+                <input type="hidden" id="addPolicyRowVersion" name="RowVersion"/>
 
                 <div class="modal-header">
                     <div>
@@ -267,7 +269,7 @@
                         Cancel
                     </button>
 
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" class="btn btn-success" id="addPolicySubmitButton">
                         Save Policy
                     </button>
                 </div>

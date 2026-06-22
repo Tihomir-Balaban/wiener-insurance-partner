@@ -49,13 +49,109 @@ public sealed class PoliciesController(IPolicyService policyService) : Controlle
                 });
         }
 
+        return Ok(ToSummaryResponse(result.Value));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var model = await policyService.GetEditViewModelAsync(id);
+
+        if (model is null)
+        {
+            return NotFound(new
+            {
+                errors = new[]
+                {
+                    new
+                    {
+                        key = string.Empty,
+                        message = "Policy was not found."
+                    }
+                }
+            });
+        }
+
         return Ok(new
         {
-            partnerId = result.Value.PartnerId,
-            policyCount = result.Value.PolicyCount,
-            totalPolicyAmount = result.Value.TotalPolicyAmount,
-            isMarked = result.Value.IsMarked
+            id = model.Id,
+            partnerId = model.PartnerId,
+            policyNumber = model.PolicyNumber,
+            policyAmount = model.PolicyAmount,
+            rowVersion = model.RowVersion
         });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, EditPolicyViewModel model)
+    {
+        if (id != model.Id)
+        {
+            return BadRequest(new
+            {
+                errors = new[]
+                {
+                    new
+                    {
+                        key = string.Empty,
+                        message = "Invalid policy request."
+                    }
+                }
+            });
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new
+            {
+                errors = GetModelStateErrors()
+            });
+        }
+
+        var result = await policyService.UpdateAsync(model);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(new
+            {
+                errors = result.Errors.Select(error => new
+                {
+                    key = error.Key,
+                    message = error.Message
+                })
+            });
+        }
+
+        if (result.Value is null)
+        {
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                new
+                {
+                    errors = new[]
+                    {
+                        new
+                        {
+                            key = string.Empty,
+                            message = "Policy was updated, but the updated partner summary could not be loaded."
+                        }
+                    }
+                });
+        }
+
+        return Ok(ToSummaryResponse(result.Value));
+    }
+
+    private static object ToSummaryResponse(PartnerPolicySummaryViewModel summary)
+    {
+        return new
+        {
+            partnerId = summary.PartnerId,
+            policyCount = summary.PolicyCount,
+            totalPolicyAmount = summary.TotalPolicyAmount,
+            isMarked = summary.IsMarked
+        };
     }
 
     private IEnumerable<object> GetModelStateErrors()
