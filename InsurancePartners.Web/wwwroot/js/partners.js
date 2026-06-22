@@ -6,6 +6,14 @@
     const $deletePartnerForm = $('#deletePartnerForm');
     const $deletePartnerName = $('#deletePartnerName');
 
+    const $addPolicyModal = $('#addPolicyModal');
+    const $addPolicyForm = $('#addPolicyForm');
+    const $addPolicyPartnerId = $('#addPolicyPartnerId');
+    const $addPolicyPartnerName = $('#addPolicyPartnerName');
+    const $addPolicyNumber = $('#addPolicyNumber');
+    const $addPolicyAmount = $('#addPolicyAmount');
+    const $addPolicyErrors = $('#addPolicyErrors');
+
     function showPartnerDetails(partnerId) {
         if (!partnerId) {
             return;
@@ -50,6 +58,69 @@
             });
     }
 
+    function clearAddPolicyForm() {
+        $addPolicyErrors.empty();
+        $addPolicyPartnerId.val('');
+        $addPolicyPartnerName.text('');
+        $addPolicyNumber.val('');
+        $addPolicyAmount.val('');
+    }
+
+    function showAddPolicyErrors(errors) {
+        if (!errors || errors.length === 0) {
+            $addPolicyErrors.html(`
+                <div class="alert alert-danger">
+                    Policy could not be saved.
+                </div>
+            `);
+
+            return;
+        }
+
+        const errorItems = errors
+            .map(function (error) {
+                return `<li>${escapeHtml(error.message || 'Validation error')}</li>`;
+            })
+            .join('');
+
+        $addPolicyErrors.html(`
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    ${errorItems}
+                </ul>
+            </div>
+        `);
+    }
+
+    function updatePartnerPolicySummary(partnerId, policyCount, totalPolicyAmount, isMarked) {
+        const $row = $(`tr[data-partner-id="${partnerId}"]`);
+
+        if ($row.length === 0) {
+            return;
+        }
+
+        $row.find('.partner-policy-count').text(policyCount);
+
+        const formattedAmount = Number(totalPolicyAmount).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        $row.find('.partner-total-policy-amount').text(formattedAmount);
+
+        const $fullName = $row.find('.partner-full-name');
+        const currentName = $fullName.text().trim();
+        const nameWithoutMarker = currentName.startsWith('* ')
+            ? currentName.substring(2)
+            : currentName;
+
+        $fullName.text(isMarked ? `* ${nameWithoutMarker}` : nameWithoutMarker);
+    }
+
+    function escapeHtml(value) {
+        return $('<div>').text(value).html();
+    }
+
     $(document).on('click', '.js-partner-details', function (event) {
         event.preventDefault();
         event.stopPropagation();
@@ -86,5 +157,58 @@
         $deletePartnerForm.attr('action', `/Partners/Delete/${partnerId}`);
 
         $deletePartnerModal.modal('show');
+    });
+
+    $(document).on('click', '.js-add-policy', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const partnerId = $(this).data('partner-id');
+        const partnerName = $(this).data('partner-name');
+
+        if (!partnerId) {
+            return;
+        }
+
+        clearAddPolicyForm();
+
+        $addPolicyPartnerId.val(partnerId);
+        $addPolicyPartnerName.text(partnerName || 'Selected partner');
+
+        $addPolicyModal.modal('show');
+    });
+
+    $addPolicyForm.on('submit', function (event) {
+        event.preventDefault();
+
+        const $form = $(this);
+        const $submitButton = $form.find('button[type="submit"]');
+
+        $addPolicyErrors.empty();
+        $submitButton.prop('disabled', true);
+
+        $.ajax({
+            type: 'POST',
+            url: $form.attr('action'),
+            data: $form.serialize()
+        })
+            .done(function (response) {
+                updatePartnerPolicySummary(
+                    response.partnerId,
+                    response.policyCount,
+                    response.totalPolicyAmount,
+                    response.isMarked
+                );
+
+                $addPolicyModal.modal('hide');
+                clearAddPolicyForm();
+            })
+            .fail(function (xhr) {
+                const response = xhr.responseJSON;
+                showAddPolicyErrors(response ? response.errors : []);
+            })
+            .always(function () {
+                $submitButton.prop('disabled', false);
+            });
     });
 });
