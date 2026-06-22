@@ -8,7 +8,7 @@ public sealed class CreatePartnerViewModel
     [Required]
     [StringLength(255, MinimumLength = 2)]
     [RegularExpression(
-        @"^[\p{L}\p{N} .'\-]+$",
+        @"^[A-Za-z0-9ČĆŽŠĐčćžšđ .'\-]+$",
         ErrorMessage = "First name may contain only letters, numbers, spaces, dots, apostrophes, and hyphens.")]
     [Display(Name = "First Name")]
     public string FirstName { get; set; } = string.Empty;
@@ -16,7 +16,7 @@ public sealed class CreatePartnerViewModel
     [Required]
     [StringLength(255, MinimumLength = 2)]
     [RegularExpression(
-        @"^[\p{L}\p{N} .'\-]+$",
+        @"^[A-Za-z0-9ČĆŽŠĐčćžšđ .'\-]+$",
         ErrorMessage = "Last name may contain only letters, numbers, spaces, dots, apostrophes, and hyphens.")]
     [Display(Name = "Last Name")]
     public string LastName { get; set; } = string.Empty;

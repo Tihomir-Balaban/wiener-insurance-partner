@@ -12,6 +12,8 @@ public interface IPartnerService
 
     Task<EditPartnerViewModel?> GetEditViewModelAsync(int id);
 
+    Task<EditPartnerViewModel> BuildEditViewModelAsync(EditPartnerViewModel model);
+
     Task<ServiceResult<int>> CreateAsync(CreatePartnerViewModel model);
 
     Task<ServiceResult> UpdateAsync(EditPartnerViewModel model);

@@ -55,7 +55,14 @@ public sealed class PartnerService(
             PartnerTypes = partnerTypes
         };
     }
+    
+    public async Task<EditPartnerViewModel> BuildEditViewModelAsync(EditPartnerViewModel model)
+    {
+        model.PartnerTypes = await partnerRepository.GetPartnerTypesAsync();
 
+        return model;
+    }
+    
     public async Task<ServiceResult<int>> CreateAsync(CreatePartnerViewModel model)
     {
         var partnerNumber = NormalizeRequired(model.PartnerNumber);

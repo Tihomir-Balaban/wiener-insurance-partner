@@ -1,0 +1,139 @@
+﻿@model EditPartnerViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Edit Partner";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Edit Partner</h1>
+        <p class="text-muted mb-0">Update partner information.</p>
+    </div>
+
+    <a asp-controller="Partners" asp-action="Index" class="btn btn-outline-secondary">
+        Back to List
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <strong>Partner Information</strong>
+    </div>
+
+    <div class="card-body">
+        <form asp-controller="Partners" asp-action="Edit" asp-route-id="@Model.Id" method="post" novalidate>
+            @Html.AntiForgeryToken()
+
+            <input asp-for="Id" type="hidden"/>
+            <input asp-for="RowVersion" type="hidden"/>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            }
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="FirstName">First Name</label>
+                    <input asp-for="FirstName" class="form-control"/>
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="LastName">Last Name</label>
+                    <input asp-for="LastName" class="form-control"/>
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Address">Address</label>
+                <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="PartnerNumber">Partner Number</label>
+                    <input asp-for="PartnerNumber" class="form-control" maxlength="20"/>
+                    <small class="form-text text-muted">Must contain exactly 20 digits.</small>
+                    <span asp-validation-for="PartnerNumber" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="CroatianPIN">Croatian PIN / OIB</label>
+                    <input asp-for="CroatianPIN" class="form-control" maxlength="11"/>
+                    <small class="form-text text-muted">Optional. If entered, it must be a valid 11-digit OIB.</small>
+                    <span asp-validation-for="CroatianPIN" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="PartnerTypeId">Partner Type</label>
+                    <select
+                        asp-for="PartnerTypeId"
+                        class="form-control"
+                        asp-items="@(new SelectList(Model.PartnerTypes, nameof(PartnerTypeOptionViewModel.Id), nameof(PartnerTypeOptionViewModel.Name)))">
+                        <option value="">Select partner type</option>
+                    </select>
+                    <span asp-validation-for="PartnerTypeId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="Gender">Gender</label>
+                    <select asp-for="Gender" class="form-control">
+                        <option value="">Select gender</option>
+                        <option value="M">M</option>
+                        <option value="F">F</option>
+                        <option value="N">N</option>
+                    </select>
+                    <span asp-validation-for="Gender" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CreateByUser">Created By User</label>
+                <input asp-for="CreateByUser" class="form-control" type="email"/>
+                <small class="form-text text-muted">Enter the email address of the user updating this partner.</small>
+                <span asp-validation-for="CreateByUser" class="text-danger"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="ExternalCode">External Code</label>
+                    <input asp-for="ExternalCode" class="form-control" maxlength="20"/>
+                    <small class="form-text text-muted">Alphanumeric, 10 to 20 characters, unique.</small>
+                    <span asp-validation-for="ExternalCode" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6 d-flex align-items-center">
+                    <div class="form-check mt-4">
+                        <input asp-for="IsForeign" class="form-check-input"/>
+                        <label asp-for="IsForeign" class="form-check-label">
+                            Is Foreign
+                        </label>
+                        <span asp-validation-for="IsForeign" class="text-danger d-block"></span>
+                    </div>
+                </div>
+            </div>
+
+            <hr/>
+
+            <div class="d-flex justify-content-end">
+                <a asp-controller="Partners" asp-action="Index" class="btn btn-outline-secondary mr-2">
+                    Cancel
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

@@ -11,14 +11,14 @@ public sealed class EditPartnerViewModel
     [Required]
     [StringLength(255, MinimumLength = 2)]
     [RegularExpression(
-        @"^[\p{L}\p{N} .'\-]+$",
+        @"^[A-Za-z0-9ČĆŽŠĐčćžšđ .'\-]+$",
         ErrorMessage = "First name may contain only letters, numbers, spaces, dots, apostrophes, and hyphens.")]
     public string FirstName { get; set; } = string.Empty;
 
     [Required]
     [StringLength(255, MinimumLength = 2)]
     [RegularExpression(
-        @"^[\p{L}\p{N} .'\-]+$",
+        @"^[A-Za-z0-9ČĆŽŠĐčćžšđ .'\-]+$",
         ErrorMessage = "Last name may contain only letters, numbers, spaces, dots, apostrophes, and hyphens.")]
     public string LastName { get; set; } = string.Empty;
 

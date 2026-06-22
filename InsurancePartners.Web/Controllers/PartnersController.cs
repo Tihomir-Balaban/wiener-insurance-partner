@@ -64,7 +64,54 @@ public sealed class PartnersController(IPartnerService partnerService) : Control
             nameof(Index),
             new { highlightId = result.Value });
     }
+    
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var model = await partnerService.GetEditViewModelAsync(id);
 
+        if (model is null)
+        {
+            return NotFound();
+        }
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, EditPartnerViewModel model)
+    {
+        if (id != model.Id)
+        {
+            return BadRequest();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            model = await partnerService.BuildEditViewModelAsync(model);
+
+            return View(model);
+        }
+
+        var result = await partnerService.UpdateAsync(model);
+
+        if (!result.Succeeded)
+        {
+            AddServiceErrors(result.Errors);
+
+            model = await partnerService.BuildEditViewModelAsync(model);
+
+            return View(model);
+        }
+
+        TempData["SuccessMessage"] = "Partner was updated successfully.";
+
+        return RedirectToAction(
+            nameof(Index),
+            new { highlightId = model.Id });
+    }
+    
     private void AddServiceErrors(IReadOnlyList<ServiceError> errors)
     {
         foreach (var error in errors)
