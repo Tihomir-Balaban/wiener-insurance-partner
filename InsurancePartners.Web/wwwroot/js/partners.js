@@ -2,6 +2,10 @@
     const $partnerDetailsModal = $('#partnerDetailsModal');
     const $partnerDetailsModalContent = $('#partnerDetailsModalContent');
 
+    const $deletePartnerModal = $('#deletePartnerModal');
+    const $deletePartnerForm = $('#deletePartnerForm');
+    const $deletePartnerName = $('#deletePartnerName');
+
     function showPartnerDetails(partnerId) {
         if (!partnerId) {
             return;
@@ -65,5 +69,22 @@
         const partnerId = $(this).data('partner-id');
 
         showPartnerDetails(partnerId);
+    });
+
+    $(document).on('click', '.js-delete-partner', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const partnerId = $(this).data('partner-id');
+        const partnerName = $(this).data('partner-name');
+
+        if (!partnerId) {
+            return;
+        }
+
+        $deletePartnerName.text(partnerName || 'Selected partner');
+        $deletePartnerForm.attr('action', `/Partners/Delete/${partnerId}`);
+
+        $deletePartnerModal.modal('show');
     });
 });

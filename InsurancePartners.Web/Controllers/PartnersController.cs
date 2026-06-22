@@ -112,6 +112,24 @@ public sealed class PartnersController(IPartnerService partnerService) : Control
             new { highlightId = model.Id });
     }
     
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var result = await partnerService.SoftDeleteAsync(id);
+
+        if (!result.Succeeded)
+        {
+            TempData["ErrorMessage"] = "Partner could not be deleted.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        TempData["SuccessMessage"] = "Partner was deleted successfully.";
+
+        return RedirectToAction(nameof(Index));
+    }
+    
     private void AddServiceErrors(IReadOnlyList<ServiceError> errors)
     {
         foreach (var error in errors)
