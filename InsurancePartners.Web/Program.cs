@@ -1,9 +1,17 @@
 using InsurancePartners.Web.Database;
+using InsurancePartners.Web.Repositories;
+using InsurancePartners.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IDbConnectionFactory, SqlConnectionFactory>();
+builder.Services.AddScoped<IPartnerRepository, PartnerRepository>();
+builder.Services.AddScoped<IPolicyRepository, PolicyRepository>();
+
+builder.Services.AddScoped<IPartnerService, PartnerService>();
+builder.Services.AddScoped<IPolicyService, PolicyService>();
 
 var app = builder.Build();
 
