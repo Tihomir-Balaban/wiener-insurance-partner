@@ -29,3 +29,20 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.table td,
+.table th {
+  vertical-align: middle;
+}
+
+.partner-full-name {
+  white-space: nowrap;
+}
+
+.footer {
+  line-height: 60px;
+}
+
+.table-warning.font-weight-bold td {
+  font-weight: 600;
+}

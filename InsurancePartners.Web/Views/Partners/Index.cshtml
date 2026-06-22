@@ -1,0 +1,141 @@
+﻿@model IReadOnlyList<PartnerListItemViewModel>
+
+@{
+    ViewData["Title"] = "Partners";
+
+    int? highlightId = null;
+
+    if (ViewBag.HighlightId is int id)
+    {
+        highlightId = id;
+    }
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Insurance Partners</h1>
+        <p class="text-muted mb-0">Manage insurance company partners and their policies.</p>
+    </div>
+
+    <a asp-controller="Partners" asp-action="Create" class="btn btn-primary">
+        Add Partner
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] is string successMessage)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @successMessage
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] is string errorMessage)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <strong>Partner List</strong>
+    </div>
+
+    <div class="card-body p-0">
+        @if (Model.Count == 0)
+        {
+            <div class="p-4 text-center text-muted">
+                No partners have been added yet.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="thead-light">
+                    <tr>
+                        <th>Full Name</th>
+                        <th>Partner Number</th>
+                        <th>Croatian PIN / OIB</th>
+                        <th>Partner Type</th>
+                        <th>Created At UTC</th>
+                        <th>Foreign</th>
+                        <th>Gender</th>
+                        <th class="text-right">Policies</th>
+                        <th class="text-right">Total Amount</th>
+                        <th class="text-right">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var partner in Model)
+                    {
+                        var rowClass = highlightId == partner.Id
+                            ? "table-warning font-weight-bold"
+                            : string.Empty;
+
+                        var fullName = partner.IsMarked
+                            ? $"* {partner.FullName}"
+                            : partner.FullName;
+
+                        <tr class="@rowClass" data-partner-id="@partner.Id">
+                            <td>
+                                <span class="partner-full-name">@fullName</span>
+                            </td>
+                            <td>@partner.PartnerNumber</td>
+                            <td>@(partner.CroatianPIN ?? "-")</td>
+                            <td>@partner.PartnerTypeName</td>
+                            <td>@partner.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>@(partner.IsForeign ? "Yes" : "No")</td>
+                            <td>@partner.Gender</td>
+                            <td class="text-right partner-policy-count">@partner.PolicyCount</td>
+                            <td class="text-right partner-total-policy-amount">
+                                @partner.TotalPolicyAmount.ToString("N2")
+                            </td>
+                            <td class="text-right">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-info js-partner-details"
+                                        data-partner-id="@partner.Id">
+                                        Details
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-success js-add-policy"
+                                        data-partner-id="@partner.Id"
+                                        data-partner-name="@partner.FullName">
+                                        Add Policy
+                                    </button>
+
+                                    <a
+                                        asp-controller="Partners"
+                                        asp-action="Edit"
+                                        asp-route-id="@partner.Id"
+                                        class="btn btn-outline-primary">
+                                        Edit
+                                    </a>
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-danger js-delete-partner"
+                                        data-partner-id="@partner.Id"
+                                        data-partner-name="@partner.FullName">
+                                        Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
