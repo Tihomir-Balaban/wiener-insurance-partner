@@ -4,4 +4,7 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 
-/.idea/*
+# JetBrains Rider / ReSharper
+.idea/
+*.sln.DotSettings.user
+*.DotSettings.user
