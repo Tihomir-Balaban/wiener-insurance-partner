@@ -22,6 +22,8 @@
     </a>
 </div>
 
+<div id="pageAlertContainer"></div>
+
 @if (TempData["SuccessMessage"] is string successMessage)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -87,7 +89,7 @@
 
                         <tr class="@tableRowClass" data-partner-id="@partner.Id">
                             <td>
-                                <span class="partner-full-name">@fullName</span>
+                                <span class="partner-full-name" data-base-name="@partner.FullName">@fullName</span>
                             </td>
                             <td>@partner.PartnerNumber</td>
                             <td>@(partner.CroatianPIN ?? "-")</td>

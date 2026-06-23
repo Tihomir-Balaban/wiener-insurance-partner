@@ -1,4 +1,6 @@
 ﻿$(function () {
+    const $pageAlertContainer = $('#pageAlertContainer');
+
     const $partnerDetailsModal = $('#partnerDetailsModal');
     const $partnerDetailsModalContent = $('#partnerDetailsModalContent');
 
@@ -213,14 +215,29 @@
         $row.find('.partner-total-policy-amount').text(formattedAmount);
 
         const $fullName = $row.find('.partner-full-name');
-        const currentName = $fullName.text().trim();
-        const nameWithoutMarker = currentName.startsWith('* ')
-            ? currentName.substring(2)
-            : currentName;
+        const baseName = $fullName.data('base-name') || $fullName.text().replace(/^\*\s*/, '').trim();
 
-        $fullName.text(isMarked ? `* ${nameWithoutMarker}` : nameWithoutMarker);
+        $fullName.data('base-name', baseName);
+        $fullName.text(isMarked ? `* ${baseName}` : baseName);
     }
 
+    function showPageAlert(message, type) {
+        const alertType = type || 'success';
+
+        $pageAlertContainer.html(`
+        <div class="alert alert-${alertType} alert-dismissible fade show" role="alert">
+            ${escapeHtml(message)}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        `);
+
+        window.setTimeout(function () {
+            $pageAlertContainer.find('.alert').alert('close');
+        }, 5000);
+    }
+    
     function escapeHtml(value) {
         return $('<div>').text(value).html();
     }
@@ -328,6 +345,8 @@
             data: $form.serialize()
         })
             .done(function (response) {
+                const isEdit = $form.attr('action').includes('/Edit/');
+
                 updatePartnerPolicySummary(
                     response.partnerId,
                     response.policyCount,
@@ -337,6 +356,11 @@
 
                 $addPolicyModal.modal('hide');
                 clearPolicyForm();
+
+                showPageAlert(
+                    isEdit ? 'Policy was updated successfully.' : 'Policy was created successfully.',
+                    'success'
+                );
             })
             .fail(function (xhr) {
                 const response = xhr.responseJSON;
@@ -371,6 +395,8 @@
 
                 $deletePolicyModal.modal('hide');
                 clearDeletePolicyModal();
+
+                showPageAlert('Policy was deleted successfully.', 'success');
             })
             .fail(function (xhr) {
                 const response = xhr.responseJSON;
