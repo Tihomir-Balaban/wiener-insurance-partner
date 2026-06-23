@@ -18,6 +18,11 @@
     const $addPolicyAmount = $('#addPolicyAmount');
     const $addPolicyErrors = $('#addPolicyErrors');
 
+    const $deletePolicyModal = $('#deletePolicyModal');
+    const $deletePolicyForm = $('#deletePolicyForm');
+    const $deletePolicyNumber = $('#deletePolicyNumber');
+    const $deletePolicyErrors = $('#deletePolicyErrors');
+
     function showPartnerDetails(partnerId) {
         if (!partnerId) {
             return;
@@ -112,6 +117,33 @@
         $addPolicyModal.modal('show');
     }
 
+    function clearDeletePolicyModal() {
+        $deletePolicyErrors.empty();
+        $deletePolicyNumber.text('');
+        $deletePolicyForm.attr('action', '');
+    }
+
+    function prepareDeletePolicyModal(policyId, policyNumber) {
+        clearDeletePolicyModal();
+
+        $deletePolicyNumber.text(policyNumber || 'Selected policy');
+        $deletePolicyForm.attr('action', `/Policies/Delete/${policyId}`);
+    }
+
+    function showDeletePolicyModal() {
+        if ($partnerDetailsModal.hasClass('show')) {
+            $partnerDetailsModal.one('hidden.bs.modal', function () {
+                $deletePolicyModal.modal('show');
+            });
+
+            $partnerDetailsModal.modal('hide');
+
+            return;
+        }
+
+        $deletePolicyModal.modal('show');
+    }
+
     function showAddPolicyErrors(errors) {
         if (!errors || errors.length === 0) {
             $addPolicyErrors.html(`
@@ -130,6 +162,32 @@
             .join('');
 
         $addPolicyErrors.html(`
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    ${errorItems}
+                </ul>
+            </div>
+        `);
+    }
+
+    function showDeletePolicyErrors(errors) {
+        if (!errors || errors.length === 0) {
+            $deletePolicyErrors.html(`
+                <div class="alert alert-danger">
+                    Policy could not be deleted.
+                </div>
+            `);
+
+            return;
+        }
+
+        const errorItems = errors
+            .map(function (error) {
+                return `<li>${escapeHtml(error.message || 'Validation error')}</li>`;
+            })
+            .join('');
+
+        $deletePolicyErrors.html(`
             <div class="alert alert-danger">
                 <ul class="mb-0">
                     ${errorItems}
@@ -240,6 +298,21 @@
             });
     });
 
+    $(document).on('click', '.js-delete-policy', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const policyId = $(this).data('policy-id');
+        const policyNumber = $(this).data('policy-number');
+
+        if (!policyId) {
+            return;
+        }
+
+        prepareDeletePolicyModal(policyId, policyNumber);
+        showDeletePolicyModal();
+    });
+
     $addPolicyForm.on('submit', function (event) {
         event.preventDefault();
 
@@ -268,6 +341,40 @@
             .fail(function (xhr) {
                 const response = xhr.responseJSON;
                 showAddPolicyErrors(response ? response.errors : []);
+            })
+            .always(function () {
+                $submitButton.prop('disabled', false);
+            });
+    });
+
+    $deletePolicyForm.on('submit', function (event) {
+        event.preventDefault();
+
+        const $form = $(this);
+        const $submitButton = $form.find('button[type="submit"]');
+
+        $deletePolicyErrors.empty();
+        $submitButton.prop('disabled', true);
+
+        $.ajax({
+            type: 'POST',
+            url: $form.attr('action'),
+            data: $form.serialize()
+        })
+            .done(function (response) {
+                updatePartnerPolicySummary(
+                    response.partnerId,
+                    response.policyCount,
+                    response.totalPolicyAmount,
+                    response.isMarked
+                );
+
+                $deletePolicyModal.modal('hide');
+                clearDeletePolicyModal();
+            })
+            .fail(function (xhr) {
+                const response = xhr.responseJSON;
+                showDeletePolicyErrors(response ? response.errors : []);
             })
             .always(function () {
                 $submitButton.prop('disabled', false);

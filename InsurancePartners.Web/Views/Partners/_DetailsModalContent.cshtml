@@ -91,7 +91,7 @@
                 <tbody>
                 @foreach (var policy in Model.Policies)
                 {
-                    <tr data-policy-id="@policy.Id">
+                    <tr data-policy-id="@policy.Id" data-policy-number="@policy.PolicyNumber">
                         <td>@policy.PolicyNumber</td>
                         <td class="text-right">@policy.PolicyAmount.ToString("N2")</td>
                         <td>@policy.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm")</td>
@@ -107,7 +107,8 @@
                                 <button
                                     type="button"
                                     class="btn btn-outline-danger js-delete-policy"
-                                    data-policy-id="@policy.Id">
+                                    data-policy-id="@policy.Id"
+                                    data-policy-number="@policy.PolicyNumber">
                                     Delete
                                 </button>
                             </div>
