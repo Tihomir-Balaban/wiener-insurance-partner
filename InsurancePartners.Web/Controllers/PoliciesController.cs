@@ -143,6 +143,44 @@ public sealed class PoliciesController(IPolicyService policyService) : Controlle
         return Ok(ToSummaryResponse(result.Value));
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var result = await policyService.SoftDeleteAsync(id);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(new
+            {
+                errors = result.Errors.Select(error => new
+                {
+                    key = error.Key,
+                    message = error.Message
+                })
+            });
+        }
+
+        if (result.Value is null)
+        {
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                new
+                {
+                    errors = new[]
+                    {
+                        new
+                        {
+                            key = string.Empty,
+                            message = "Policy was deleted, but the updated partner summary could not be loaded."
+                        }
+                    }
+                });
+        }
+
+        return Ok(ToSummaryResponse(result.Value));
+    }
+
     private static object ToSummaryResponse(PartnerPolicySummaryViewModel summary)
     {
         return new
