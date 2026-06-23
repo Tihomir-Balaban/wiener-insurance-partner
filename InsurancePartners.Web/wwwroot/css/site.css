@@ -1,5 +1,7 @@
 html {
   font-size: 14px;
+  position: relative;
+  min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -8,26 +10,21 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
   margin-bottom: 60px;
+  background-color: #f8f9fa;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+main {
+  min-height: calc(100vh - 180px);
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.navbar-brand {
+  white-space: normal;
+}
+
+.card {
+  border: 1px solid rgba(0, 0, 0, .125);
 }
 
 .table td,
@@ -39,16 +36,25 @@ body {
   white-space: nowrap;
 }
 
+.js-partner-row {
+  cursor: pointer;
+}
+
+.btn-group-sm > .btn,
+.btn-sm {
+  white-space: nowrap;
+}
+
 .footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
   line-height: 60px;
+  background-color: #fff;
 }
 
 .table-warning.font-weight-bold td {
   font-weight: 600;
-}
-
-.js-partner-row {
-  cursor: pointer;
 }
 
 .modal-body dl dt {
@@ -57,4 +63,18 @@ body {
 
 .modal-body dl dd {
   margin-bottom: .5rem;
+}
+
+.validation-summary-valid {
+  display: none;
+}
+
+.field-validation-error {
+  display: block;
+  margin-top: .25rem;
+  font-size: .875rem;
+}
+
+.input-validation-error {
+  border-color: #dc3545;
 }
