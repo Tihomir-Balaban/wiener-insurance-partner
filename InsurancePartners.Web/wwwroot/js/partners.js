@@ -218,7 +218,9 @@
         const baseName = $fullName.data('base-name') || $fullName.text().replace(/^\*\s*/, '').trim();
 
         $fullName.data('base-name', baseName);
-        $fullName.text(isMarked ? `* ${baseName}` : baseName);
+        
+        const markedIcon = `<i class="fa-solid fa-asterisk"></i>`
+        $fullName.text(isMarked ? `${markedIcon} ${baseName}` : baseName);
     }
 
     function showPageAlert(message, type) {

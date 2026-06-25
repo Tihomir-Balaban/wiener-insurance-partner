@@ -62,7 +62,7 @@
                 <table class="table table-hover table-striped mb-0">
                     <thead class="thead-light">
                     <tr>
-                        <th>Full Name</th>
+                        <th colspan="2">Full Name</th>
                         <th>Partner Number</th>
                         <th>Croatian PIN / OIB</th>
                         <th>Partner Type</th>
@@ -84,11 +84,17 @@
                         var tableRowClass = $"js-partner-row {rowClass}".Trim();
 
                         var fullName = partner.IsMarked
-                            ? $"* {partner.FullName}"
+                            ? $" {partner.FullName}"
                             : partner.FullName;
 
                         <tr class="@tableRowClass" data-partner-id="@partner.Id">
                             <td>
+                                @if (partner.IsMarked)
+                                {
+                                    <i class="fa fa-solid fa-asterisk"></i>
+                                }
+                            </td>
+                            <td>    
                                 <span class="partner-full-name" data-base-name="@partner.FullName">@fullName</span>
                             </td>
                             <td>@partner.PartnerNumber</td>
@@ -105,14 +111,14 @@
                                 <div class="btn-group btn-group-sm" role="group">
                                     <button
                                         type="button"
-                                        class="btn btn-outline-info js-partner-details"
+                                        class="btn btn-outline-info js-partner-details mr-2"
                                         data-partner-id="@partner.Id">
                                         Details
                                     </button>
 
                                     <button
                                         type="button"
-                                        class="btn btn-outline-success js-add-policy"
+                                        class="btn btn-outline-success js-add-policy mr-2"
                                         data-partner-id="@partner.Id"
                                         data-partner-name="@partner.FullName">
                                         Add Policy
@@ -122,13 +128,13 @@
                                         asp-controller="Partners"
                                         asp-action="Edit"
                                         asp-route-id="@partner.Id"
-                                        class="btn btn-outline-primary">
+                                        class="btn btn-outline-primary mr-2">
                                         Edit
                                     </a>
 
                                     <button
                                         type="button"
-                                        class="btn btn-outline-danger js-delete-partner"
+                                        class="btn btn-outline-danger js-delete-partner mr-2"
                                         data-partner-id="@partner.Id"
                                         data-partner-name="@partner.FullName">
                                         Delete

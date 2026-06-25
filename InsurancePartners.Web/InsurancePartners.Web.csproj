@@ -15,5 +15,9 @@
     <ItemGroup>
         <EmbeddedResource Include="Database\Migrations\*.sql" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <None Include="wwwroot\images\logo.svg" />
+    </ItemGroup>
 
 </Project>
